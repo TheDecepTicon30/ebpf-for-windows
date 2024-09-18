@@ -7,22 +7,19 @@
  * Registers as an eBPF extension program information provider and hook provider.
  */
 
-#include "ebpf_extension.h"
-#include <ntifs.h> // Must be included before ntddk.h
-#include <ntddk.h>
-
 #include "cxplat.h"
 #include "ebpf_extension.h"
 #include "ebpf_extension_uuids.h"
+#include "ebpf_program_attach_type_guids.h" // TODO(issue #2305): remove this include.
 #include "ebpf_program_types.h"
 #include "ebpf_structs.h"
-#include "ebpf_program_attach_type_guids.h" // TODO(issue #2305): remove this include.
-#include "ebpf_structs.h"
 
+#include <ntifs.h> // Must be included before ntddk.h
 #include <netioddk.h>
+#include <ntddk.h>
 #include <ntstatus.h>
 
-#define EBPF_PROGRAM_TYPE_EF_GUID                                                  \
+#define EBPF_PROGRAM_TYPE_EF_GUID                                                      \
     {                                                                                  \
         0xf788ef4a, 0x207d, 0x4dc3, { 0x85, 0xcf, 0x0f, 0x2e, 0xa1, 0x07, 0x21, 0x3c } \
     }
@@ -221,15 +218,11 @@ _ef_get_pid_tgid()
     return EF_PID_TGID_VALUE;
 }
 
-
 typedef struct _ef_ebpf_extension_program_info_client
 {
     HANDLE nmr_binding_handle;
     GUID client_module_id;
 } ef_ebpf_extension_program_info_client_t;
-
-
-
 
 static const ebpf_helper_function_addresses_t _ef_ebpf_extension_helper_function_address_table = {
     EBPF_HELPER_FUNCTION_ADDRESSES_HEADER,
@@ -299,8 +292,8 @@ _ef_context_create(
         goto Exit;
     }
 
-    context_header = cxplat_allocate(
-        CXPLAT_POOL_FLAG_NON_PAGED, sizeof(ef_program_context_header_t), EF_EXT_POOL_TAG_DEFAULT);
+    context_header =
+        cxplat_allocate(CXPLAT_POOL_FLAG_NON_PAGED, sizeof(ef_program_context_header_t), EF_EXT_POOL_TAG_DEFAULT);
     if (context_header == NULL) {
         result = EBPF_NO_MEMORY;
         goto Exit;
@@ -386,7 +379,8 @@ typedef struct _ef_ebpf_extension_hook_provider
 
 static ef_ebpf_extension_hook_provider_t _ef_ebpf_extension_hook_provider_context = {0};
 
-NPI_MODULEID DECLSPEC_SELECTANY _ef_ebpf_extension_program_info_provider_moduleid = {sizeof(NPI_MODULEID), MIT_GUID, EBPF_PROGRAM_TYPE_EF_GUID};
+NPI_MODULEID DECLSPEC_SELECTANY _ef_ebpf_extension_program_info_provider_moduleid = {
+    sizeof(NPI_MODULEID), MIT_GUID, EBPF_PROGRAM_TYPE_EF_GUID};
 
 static NTSTATUS
 _ef_ebpf_extension_program_info_provider_attach_client(
@@ -468,8 +462,7 @@ const NPI_PROVIDER_CHARACTERISTICS _ef_ebpf_extension_program_info_provider_char
 void
 ef_ebpf_extension_program_info_provider_unregister()
 {
-    ef_ebpf_extension_program_info_provider_t* provider_context =
-        &_ef_ebpf_extension_program_info_provider_context;
+    ef_ebpf_extension_program_info_provider_t* provider_context = &_ef_ebpf_extension_program_info_provider_context;
     NTSTATUS status = NmrDeregisterProvider(provider_context->nmr_provider_handle);
     if (status == STATUS_PENDING) {
         NmrWaitForProviderDeregisterComplete(provider_context->nmr_provider_handle);
@@ -527,8 +520,7 @@ _ef_ebpf_extension_hook_provider_attach_client(
     _Outptr_result_maybenull_ const void** provider_dispatch)
 {
     NTSTATUS status = STATUS_SUCCESS;
-    ef_ebpf_extension_hook_provider_t* local_provider_context =
-        (ef_ebpf_extension_hook_provider_t*)provider_context;
+    ef_ebpf_extension_hook_provider_t* local_provider_context = (ef_ebpf_extension_hook_provider_t*)provider_context;
     ef_ebpf_extension_hook_client_t* hook_client = NULL;
     ebpf_extension_program_dispatch_table_t* client_dispatch_table;
 
@@ -546,8 +538,8 @@ _ef_ebpf_extension_hook_provider_attach_client(
     *provider_binding_context = NULL;
     *provider_dispatch = NULL;
 
-    hook_client = cxplat_allocate(
-        CXPLAT_POOL_FLAG_NON_PAGED, sizeof(ef_ebpf_extension_hook_client_t), EF_EXT_POOL_TAG_DEFAULT);
+    hook_client =
+        cxplat_allocate(CXPLAT_POOL_FLAG_NON_PAGED, sizeof(ef_ebpf_extension_hook_client_t), EF_EXT_POOL_TAG_DEFAULT);
     if (hook_client == NULL) {
         status = STATUS_NO_MEMORY;
         goto Exit;
@@ -593,8 +585,7 @@ _ef_ebpf_extension_hook_provider_detach_client(_In_ const void* provider_binding
 {
     NTSTATUS status = STATUS_SUCCESS;
 
-    ef_ebpf_extension_hook_client_t* local_client_context =
-        (ef_ebpf_extension_hook_client_t*)provider_binding_context;
+    ef_ebpf_extension_hook_client_t* local_client_context = (ef_ebpf_extension_hook_client_t*)provider_binding_context;
     ef_ebpf_extension_hook_provider_t* provider_context = NULL;
 
     if (local_client_context == NULL) {
@@ -615,7 +606,8 @@ _ef_ebpf_extension_hook_provider_cleanup_binding_context(_Frees_ptr_ void* provi
     CXPLAT_FREE(provider_binding_context);
 }
 
-NPI_MODULEID DECLSPEC_SELECTANY _ef_ebpf_extension_hook_provider_moduleid = {sizeof(NPI_MODULEID), MIT_GUID, EBPF_PROGRAM_TYPE_EF_GUID};
+NPI_MODULEID DECLSPEC_SELECTANY _ef_ebpf_extension_hook_provider_moduleid = {
+    sizeof(NPI_MODULEID), MIT_GUID, EBPF_PROGRAM_TYPE_EF_GUID};
 
 // EF eBPF extension Hook NPI provider characteristics
 ebpf_attach_provider_data_t _ef_ebpf_extension_attach_provider_data = {
