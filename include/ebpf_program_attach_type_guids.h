@@ -114,6 +114,17 @@ extern "C"
      */
     __declspec(selectany) ebpf_attach_type_t EBPF_ATTACH_TYPE_XDP_TEST = EBPF_ATTACH_TYPE_XDP_TEST_GUID;
 
+#define EBPF_ATTACH_TYPE_POST_CREATE_GUID                                            \
+    {                                                                                \
+        0x8081a77c, 0x7503, 0x4a82, { 0x89, 0x55, 0x9, 0x2, 0xd6, 0x23, 0xbe, 0x1c } \
+    }
+
+    /** @brief Attach type implemented by eBPF File Extension driver.
+     *
+     * Program type: \ref EBPF_PROGRAM_TYPE_FILE_OPS
+     */
+    __declspec(selectany) ebpf_attach_type_t EBPF_ATTACH_TYPE_POST_CREATE = EBPF_ATTACH_TYPE_POST_CREATE_GUID;
+
     //
     // Program Types.
     //
@@ -205,6 +216,21 @@ extern "C"
      * Helpers available: see bpf_helpers.h
      */
     __declspec(selectany) ebpf_program_type_t EBPF_PROGRAM_TYPE_XDP_TEST = EBPF_PROGRAM_TYPE_XDP_TEST_GUID;
+
+#define EBPF_PROGRAM_TYPE_FILE_OPS_GUID                                               \
+    {                                                                                 \
+        0x69659d2e, 0x66d3, 0x4b4d, { 0x93, 0x83, 0x73, 0x0, 0xa0, 0x96, 0xe7, 0x3b } \
+    }
+
+    /** @brief Program type for handling file system notifications.
+     *
+     * eBPF program prototype: \ref file_ops_hook_t
+     *
+     * Attach type(s): \ref EBPF_ATTACH_TYPE_POST_CREATE
+     *
+     * Helpers available: see bpf_helpers.h
+     */
+    __declspec(selectany) ebpf_program_type_t EBPF_PROGRAM_TYPE_FILE_OPS = EBPF_PROGRAM_TYPE_FILE_OPS_GUID;
 
 #ifdef __cplusplus
 }

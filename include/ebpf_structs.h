@@ -216,6 +216,17 @@ enum bpf_prog_type
      */
     BPF_PROG_TYPE_SOCK_OPS,
 
+    /** @brief Program type for handling various file system notifications such as create etc.
+     *
+     * **eBPF program prototype:** \ref file_ops_hook_t
+     *
+     * **Attach type(s):**
+     *  \ref BPF_ATTACH_TYPE_POST_CREATE
+     *
+     * **Helpers available:** all helpers defined in bpf_helpers.h
+     */
+    BPF_PROG_TYPE_FILE_OPS,
+
     /** @brief Program type for handling incoming packets as early as possible.
      *
      * **eBPF program prototype:** \ref xdp_hook_t
@@ -318,6 +329,12 @@ enum bpf_attach_type
      * **Program type:** \ref BPF_PROG_TYPE_XDP_TEST
      */
     BPF_XDP_TEST,
+
+    /** @brief Attach type for handling post create file system operation.
+     *
+     * **Program type:** \ref BPF_PROG_TYPE_FILE_OPS
+     */
+    BPF_ATTACH_TYPE_POST_CREATE,
 
     __MAX_BPF_ATTACH_TYPE,
 };

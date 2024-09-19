@@ -19,20 +19,10 @@
 #include <ntddk.h>
 #include <ntstatus.h>
 
-#define EBPF_PROGRAM_TYPE_EF_GUID                                                      \
-    {                                                                                  \
-        0xf788ef4a, 0x207d, 0x4dc3, { 0x85, 0xcf, 0x0f, 0x2e, 0xa1, 0x07, 0x21, 0x3c } \
-    }
-
 #define EF_EXT_HELPER_FUNCTION_START EBPF_MAX_GENERAL_HELPER_FUNCTION
-
 #define EBPF_COUNT_OF(arr) (sizeof(arr) / sizeof(arr[0]))
-
-#define EBPF_COUNT_OF(arr) (sizeof(arr) / sizeof(arr[0]))
-
 #define EF_PID_TGID_VALUE 9999
-
-#define EF_EXT_POOL_TAG_DEFAULT 'lpms'
+#define EF_EXT_POOL_TAG_DEFAULT 'lpof'
 
 #define CXPLAT_FREE(x) cxplat_free(x, CXPLAT_POOL_FLAG_NON_PAGED, EF_EXT_POOL_TAG_DEFAULT)
 
@@ -55,10 +45,10 @@ static const ebpf_context_descriptor_t _ef_ebpf_context_descriptor = {
 
 static const ebpf_program_type_descriptor_t _ef_ebpf_extension_program_type_descriptor = {
     EBPF_PROGRAM_TYPE_DESCRIPTOR_HEADER,
-    "file",
+    "file_ops",
     &_ef_ebpf_context_descriptor,
-    EBPF_PROGRAM_TYPE_EF_GUID,
-    BPF_PROG_TYPE_SAMPLE};
+    EBPF_PROGRAM_TYPE_FILE_OPS_GUID,
+    BPF_PROG_TYPE_FILE_OPS};
 
 // EF Extension Helper function prototype descriptors.
 static const ebpf_helper_function_prototype_t _ef_ebpf_extension_helper_function_prototype[] = {
@@ -266,7 +256,7 @@ typedef struct _ef_program_context_header
     ef_program_context_t context;
 } ef_program_context_header_t;
 
-static ebpf_result_t
+ebpf_result_t
 _ef_context_create(
     _In_reads_bytes_opt_(data_size_in) const uint8_t* data_in,
     size_t data_size_in,
@@ -314,7 +304,7 @@ Exit:
     return result;
 }
 
-static void
+void
 _ef_context_destroy(
     _In_opt_ void* context,
     _Out_writes_bytes_to_(*data_size_out, *data_size_out) uint8_t* data_out,
@@ -380,7 +370,7 @@ typedef struct _ef_ebpf_extension_hook_provider
 static ef_ebpf_extension_hook_provider_t _ef_ebpf_extension_hook_provider_context = {0};
 
 NPI_MODULEID DECLSPEC_SELECTANY _ef_ebpf_extension_program_info_provider_moduleid = {
-    sizeof(NPI_MODULEID), MIT_GUID, EBPF_PROGRAM_TYPE_EF_GUID};
+    sizeof(NPI_MODULEID), MIT_GUID, EBPF_PROGRAM_TYPE_FILE_OPS_GUID};
 
 static NTSTATUS
 _ef_ebpf_extension_program_info_provider_attach_client(
@@ -607,11 +597,11 @@ _ef_ebpf_extension_hook_provider_cleanup_binding_context(_Frees_ptr_ void* provi
 }
 
 NPI_MODULEID DECLSPEC_SELECTANY _ef_ebpf_extension_hook_provider_moduleid = {
-    sizeof(NPI_MODULEID), MIT_GUID, EBPF_PROGRAM_TYPE_EF_GUID};
+    sizeof(NPI_MODULEID), MIT_GUID, EBPF_PROGRAM_TYPE_FILE_OPS_GUID};
 
 // EF eBPF extension Hook NPI provider characteristics
 ebpf_attach_provider_data_t _ef_ebpf_extension_attach_provider_data = {
-    EBPF_ATTACH_PROVIDER_DATA_HEADER, EBPF_PROGRAM_TYPE_EF_GUID, BPF_ATTACH_TYPE_SAMPLE, BPF_LINK_TYPE_UNSPEC};
+    EBPF_ATTACH_PROVIDER_DATA_HEADER, EBPF_PROGRAM_TYPE_FILE_OPS_GUID, BPF_ATTACH_TYPE_SAMPLE, BPF_LINK_TYPE_UNSPEC};
 
 const NPI_PROVIDER_CHARACTERISTICS _ef_ebpf_extension_hook_provider_characteristics = {
     0,
