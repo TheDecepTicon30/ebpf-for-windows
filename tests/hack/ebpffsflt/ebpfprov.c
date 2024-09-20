@@ -15,7 +15,7 @@ static const ebpf_context_descriptor_t _ef_ebpf_context_descriptor = {
     EBPF_OFFSET_OF(ef_program_context_t, data_end),
     -1};
 
-static const ebpf_program_type_descriptor_t _ef_ebpf_extension_program_type_descriptor = {
+static const ebpf_program_type_descriptor_t _ef_ext_program_type_descriptor = {
     EBPF_PROGRAM_TYPE_DESCRIPTOR_HEADER,
     "file_ops",
     &_ef_ebpf_context_descriptor,
@@ -23,15 +23,15 @@ static const ebpf_program_type_descriptor_t _ef_ebpf_extension_program_type_desc
     BPF_PROG_TYPE_FILE_OPS};
 
 // EF Extension Helper function prototype descriptors.
-static const ebpf_helper_function_prototype_t _ef_ebpf_extension_helper_function_prototype[] = {
+static const ebpf_helper_function_prototype_t _ef_ext_helper_function_prototype[] = {
     {EBPF_HELPER_FUNCTION_PROTOTYPE_HEADER,
      EF_EXT_HELPER_FUNCTION_START + 1,
-     "ef_ebpf_extension_helper_function1",
+     "ef_ext_helper_function1",
      EBPF_RETURN_TYPE_INTEGER,
      {EBPF_ARGUMENT_TYPE_PTR_TO_CTX}},
     {EBPF_HELPER_FUNCTION_PROTOTYPE_HEADER,
      EF_EXT_HELPER_FUNCTION_START + 2,
-     "ef_ebpf_extension_find",
+     "ef_ext_find",
      EBPF_RETURN_TYPE_INTEGER,
      {EBPF_ARGUMENT_TYPE_PTR_TO_READABLE_MEM,
       EBPF_ARGUMENT_TYPE_CONST_SIZE,
@@ -39,7 +39,7 @@ static const ebpf_helper_function_prototype_t _ef_ebpf_extension_helper_function
       EBPF_ARGUMENT_TYPE_CONST_SIZE}},
     {EBPF_HELPER_FUNCTION_PROTOTYPE_HEADER,
      EF_EXT_HELPER_FUNCTION_START + 3,
-     "ef_ebpf_extension_replace",
+     "ef_ext_replace",
      EBPF_RETURN_TYPE_INTEGER,
      {EBPF_ARGUMENT_TYPE_PTR_TO_READABLE_MEM,
       EBPF_ARGUMENT_TYPE_CONST_SIZE,
@@ -48,14 +48,14 @@ static const ebpf_helper_function_prototype_t _ef_ebpf_extension_helper_function
       EBPF_ARGUMENT_TYPE_CONST_SIZE}},
     {EBPF_HELPER_FUNCTION_PROTOTYPE_HEADER,
      EF_EXT_HELPER_FUNCTION_START + 4,
-     "ef_ebpf_extension_helper_implicit_1",
+     "ef_ext_helper_implicit_1",
      EBPF_RETURN_TYPE_INTEGER,
      {0},
      {0},
      true},
     {EBPF_HELPER_FUNCTION_PROTOTYPE_HEADER,
      EF_EXT_HELPER_FUNCTION_START + 5,
-     "ef_ebpf_extension_helper_implicit_2",
+     "ef_ext_helper_implicit_2",
      EBPF_RETURN_TYPE_INTEGER,
      {0},
      {0},
@@ -63,7 +63,7 @@ static const ebpf_helper_function_prototype_t _ef_ebpf_extension_helper_function
 };
 
 // Global helper function prototype descriptors.
-static const ebpf_helper_function_prototype_t _ef_ebpf_extension_global_helper_function_prototype[] = {
+static const ebpf_helper_function_prototype_t _ef_ext_global_helper_function_prototype[] = {
     {
         EBPF_HELPER_FUNCTION_PROTOTYPE_HEADER,
         BPF_FUNC_get_current_pid_tgid,
@@ -72,20 +72,20 @@ static const ebpf_helper_function_prototype_t _ef_ebpf_extension_global_helper_f
     },
 };
 
-static const ebpf_program_info_t _ef_ebpf_extension_program_info = {
+static const ebpf_program_info_t _ef_ext_program_info = {
     EBPF_PROGRAM_INFORMATION_HEADER,
-    &_ef_ebpf_extension_program_type_descriptor,
-    EBPF_COUNT_OF(_ef_ebpf_extension_helper_function_prototype),
-    _ef_ebpf_extension_helper_function_prototype,
-    EBPF_COUNT_OF(_ef_ebpf_extension_global_helper_function_prototype),
-    _ef_ebpf_extension_global_helper_function_prototype};
+    &_ef_ext_program_type_descriptor,
+    EBPF_COUNT_OF(_ef_ext_helper_function_prototype),
+    _ef_ext_helper_function_prototype,
+    EBPF_COUNT_OF(_ef_ext_global_helper_function_prototype),
+    _ef_ext_global_helper_function_prototype};
 
 #pragma region Helper functions
 
 static volatile int64_t _ef_path_compare_result = 0;
 
 static int64_t
-_ef_ebpf_extension_helper_function1(_In_ const ef_program_context_t* context)
+_ef_ext_helper_function1(_In_ const ef_program_context_t* context)
 {
     UNREFERENCED_PARAMETER(context);
 
@@ -93,7 +93,7 @@ _ef_ebpf_extension_helper_function1(_In_ const ef_program_context_t* context)
 }
 
 static int64_t
-_ef_ebpf_extension_find(_In_ const void* buffer, uint32_t size, _In_ const void* find, uint32_t arg_size)
+_ef_ext_find(_In_ const void* buffer, uint32_t size, _In_ const void* find, uint32_t arg_size)
 {
     UNREFERENCED_PARAMETER(size);
     UNREFERENCED_PARAMETER(arg_size);
@@ -101,8 +101,7 @@ _ef_ebpf_extension_find(_In_ const void* buffer, uint32_t size, _In_ const void*
 }
 
 static int64_t
-_ef_ebpf_extension_replace(
-    _In_ const void* buffer, uint32_t size, int64_t position, _In_ const void* replace, uint32_t arg_size)
+_ef_ext_replace(_In_ const void* buffer, uint32_t size, int64_t position, _In_ const void* replace, uint32_t arg_size)
 {
     int64_t result = 0;
     char* dest;
@@ -133,7 +132,7 @@ Exit:
 }
 
 static int64_t
-_ef_ebpf_extension_helper_implicit_1(
+_ef_ext_helper_implicit_1(
     uint64_t dummy_param1,
     uint64_t dummy_param2,
     uint64_t dummy_param3,
@@ -152,7 +151,7 @@ _ef_ebpf_extension_helper_implicit_1(
 }
 
 static int64_t
-_ef_ebpf_extension_helper_implicit_2(
+_ef_ext_helper_implicit_2(
     uint32_t arg,
     uint64_t dummy_param1,
     uint64_t dummy_param2,
@@ -169,12 +168,12 @@ _ef_ebpf_extension_helper_implicit_2(
     return ((uint64_t)ef_context->helper_data_2 + arg);
 }
 
-static const void* _ef_ebpf_extension_helpers[] = {
-    (void*)&_ef_ebpf_extension_helper_function1,
-    (void*)&_ef_ebpf_extension_find,
-    (void*)&_ef_ebpf_extension_replace,
-    (void*)&_ef_ebpf_extension_helper_implicit_1,
-    (void*)&_ef_ebpf_extension_helper_implicit_2};
+static const void* _ef_ext_helpers[] = {
+    (void*)&_ef_ext_helper_function1,
+    (void*)&_ef_ext_find,
+    (void*)&_ef_ext_replace,
+    (void*)&_ef_ext_helper_implicit_1,
+    (void*)&_ef_ext_helper_implicit_2};
 
 #pragma endregion
 
@@ -187,16 +186,14 @@ _ef_get_pid_tgid()
 
 #pragma endregion
 
-typedef struct _ef_ebpf_extension_program_info_client
+typedef struct _ef_ext_program_info_client
 {
     HANDLE nmr_binding_handle;
     GUID client_module_id;
-} ef_ebpf_extension_program_info_client_t;
+} ef_ext_program_info_client_t;
 
-static const ebpf_helper_function_addresses_t _ef_ebpf_extension_helper_function_address_table = {
-    EBPF_HELPER_FUNCTION_ADDRESSES_HEADER,
-    EBPF_COUNT_OF(_ef_ebpf_extension_helpers),
-    (uint64_t*)_ef_ebpf_extension_helpers};
+static const ebpf_helper_function_addresses_t _ef_ext_helper_function_address_table = {
+    EBPF_HELPER_FUNCTION_ADDRESSES_HEADER, EBPF_COUNT_OF(_ef_ext_helpers), (uint64_t*)_ef_ext_helpers};
 
 static const void* _ef_global_helpers[] = {(void*)&_ef_get_pid_tgid};
 
@@ -219,10 +216,10 @@ _ef_context_destroy(
     _Out_writes_bytes_to_(*context_size_out, *context_size_out) uint8_t* context_out,
     _Inout_ size_t* context_size_out);
 
-static ebpf_program_data_t _ef_ebpf_extension_program_data = {
+static ebpf_program_data_t _ef_ext_program_data = {
     EBPF_PROGRAM_DATA_HEADER,
-    .program_info = &_ef_ebpf_extension_program_info,
-    .program_type_specific_helper_function_addresses = &_ef_ebpf_extension_helper_function_address_table,
+    .program_info = &_ef_ext_program_info,
+    .program_type_specific_helper_function_addresses = &_ef_ext_helper_function_address_table,
     .global_helper_function_addresses = &_ef_global_helper_function_address_table,
     .context_create = &_ef_context_create,
     .context_destroy = &_ef_context_destroy,
@@ -312,20 +309,20 @@ _ef_context_destroy(
     CXPLAT_FREE(context_header);
 }
 
-typedef struct _ef_ebpf_extension_program_info_provider
+typedef struct _ef_ext_program_info_provider
 {
     HANDLE nmr_provider_handle;
-} ef_ebpf_extension_program_info_provider_t;
+} ef_ext_program_info_provider_t;
 
-static ef_ebpf_extension_program_info_provider_t _ef_ebpf_extension_program_info_provider_context = {0};
+static ef_ext_program_info_provider_t _ef_ext_program_info_provider_context = {0};
 
-typedef struct _ef_ebpf_extension_hook_provider ef_ebpf_extension_hook_provider_t;
+typedef struct _ef_ext_hook_provider ef_ext_hook_provider_t;
 
 /**
  *  @brief This is the per client binding context for the eBPF Hook
  *         NPI provider.
  */
-typedef struct _ef_ebpf_extension_hook_client
+typedef struct _ef_ext_hook_client
 {
     HANDLE nmr_binding_handle;
     GUID client_module_id;
@@ -335,25 +332,25 @@ typedef struct _ef_ebpf_extension_hook_client
     ebpf_program_batch_begin_invoke_function_t begin_batch_program_invoke;
     ebpf_program_batch_end_invoke_function_t end_batch_program_invoke;
     ebpf_program_batch_invoke_function_t batch_program_invoke;
-} ef_ebpf_extension_hook_client_t;
+} ef_ext_hook_client_t;
 
 /**
  *  @brief This is the provider context of eBPF Hook NPI provider that
  *         maintains the provider registration state.
  */
-typedef struct _ef_ebpf_extension_hook_provider
+typedef struct _ef_ext_hook_provider
 {
     HANDLE nmr_provider_handle;
-    ef_ebpf_extension_hook_client_t* attached_client;
-} ef_ebpf_extension_hook_provider_t;
+    ef_ext_hook_client_t* attached_client;
+} ef_ext_hook_provider_t;
 
-static ef_ebpf_extension_hook_provider_t _ef_ebpf_extension_hook_provider_context = {0};
+static ef_ext_hook_provider_t _ef_ext_hook_provider_context = {0};
 
-NPI_MODULEID DECLSPEC_SELECTANY _ef_ebpf_extension_program_info_provider_moduleid = {
+NPI_MODULEID DECLSPEC_SELECTANY _ef_ext_program_info_provider_moduleid = {
     sizeof(NPI_MODULEID), MIT_GUID, EBPF_PROGRAM_TYPE_FILE_OPS_GUID};
 
 static NTSTATUS
-_ef_ebpf_extension_program_info_provider_attach_client(
+_ef_ext_program_info_provider_attach_client(
     _In_ HANDLE nmr_binding_handle,
     _In_ const void* provider_context,
     _In_ const NPI_REGISTRATION_INSTANCE* client_registration_instance,
@@ -363,7 +360,7 @@ _ef_ebpf_extension_program_info_provider_attach_client(
     _Outptr_result_maybenull_ const void** provider_dispatch)
 {
     NTSTATUS status = STATUS_SUCCESS;
-    ef_ebpf_extension_program_info_client_t* program_info_client = NULL;
+    ef_ext_program_info_client_t* program_info_client = NULL;
 
     UNREFERENCED_PARAMETER(provider_context);
     UNREFERENCED_PARAMETER(client_dispatch);
@@ -377,14 +374,14 @@ _ef_ebpf_extension_program_info_provider_attach_client(
     *provider_binding_context = NULL;
     *provider_dispatch = NULL;
 
-    program_info_client = cxplat_allocate(
-        CXPLAT_POOL_FLAG_NON_PAGED, sizeof(ef_ebpf_extension_program_info_client_t), EF_EXT_POOL_TAG_DEFAULT);
+    program_info_client =
+        cxplat_allocate(CXPLAT_POOL_FLAG_NON_PAGED, sizeof(ef_ext_program_info_client_t), EF_EXT_POOL_TAG_DEFAULT);
     if (program_info_client == NULL) {
         status = STATUS_NO_MEMORY;
         goto Exit;
     }
 
-    RtlZeroMemory(program_info_client, sizeof(ef_ebpf_extension_program_info_client_t));
+    RtlZeroMemory(program_info_client, sizeof(ef_ext_program_info_client_t));
 
     program_info_client->nmr_binding_handle = nmr_binding_handle;
     program_info_client->client_module_id = client_registration_instance->ModuleId->Guid;
@@ -400,7 +397,7 @@ Exit:
 }
 
 static NTSTATUS
-_ef_ebpf_extension_program_info_provider_detach_client(_In_ const void* provider_binding_context)
+_ef_ext_program_info_provider_detach_client(_In_ const void* provider_binding_context)
 {
     NTSTATUS status = STATUS_SUCCESS;
 
@@ -410,45 +407,51 @@ _ef_ebpf_extension_program_info_provider_detach_client(_In_ const void* provider
 }
 
 static void
-_ef_ebpf_extension_program_info_provider_cleanup_binding_context(_Frees_ptr_ void* provider_binding_context)
+_ef_ext_program_info_provider_cleanup_binding_context(_Frees_ptr_ void* provider_binding_context)
 {
     CXPLAT_FREE(provider_binding_context);
 }
 
-const NPI_PROVIDER_CHARACTERISTICS _ef_ebpf_extension_program_info_provider_characteristics = {
+const NPI_PROVIDER_CHARACTERISTICS _ef_ext_program_info_provider_characteristics = {
     0,
     sizeof(NPI_PROVIDER_CHARACTERISTICS),
-    _ef_ebpf_extension_program_info_provider_attach_client,
-    _ef_ebpf_extension_program_info_provider_detach_client,
-    _ef_ebpf_extension_program_info_provider_cleanup_binding_context,
+    _ef_ext_program_info_provider_attach_client,
+    _ef_ext_program_info_provider_detach_client,
+    _ef_ext_program_info_provider_cleanup_binding_context,
     {0,
      sizeof(NPI_REGISTRATION_INSTANCE),
      &EBPF_PROGRAM_INFO_EXTENSION_IID,
-     &_ef_ebpf_extension_program_info_provider_moduleid,
+     &_ef_ext_program_info_provider_moduleid,
      0,
-     &_ef_ebpf_extension_program_data},
+     &_ef_ext_program_data},
 };
 
 void
-ef_ebpf_extension_program_info_provider_unregister()
+ef_ext_program_info_provider_unregister()
 {
-    ef_ebpf_extension_program_info_provider_t* provider_context = &_ef_ebpf_extension_program_info_provider_context;
+    ef_ext_program_info_provider_t* provider_context = &_ef_ext_program_info_provider_context;
+
+    if (provider_context->nmr_provider_handle == NULL) {
+        return;
+    }
+
     NTSTATUS status = NmrDeregisterProvider(provider_context->nmr_provider_handle);
+
     if (status == STATUS_PENDING) {
         NmrWaitForProviderDeregisterComplete(provider_context->nmr_provider_handle);
     }
 }
 
 NTSTATUS
-ef_ebpf_extension_program_info_provider_register()
+ef_ext_program_info_provider_register()
 {
-    ef_ebpf_extension_program_info_provider_t* local_provider_context;
+    ef_ext_program_info_provider_t* local_provider_context;
     NTSTATUS status = STATUS_SUCCESS;
 
-    local_provider_context = &_ef_ebpf_extension_program_info_provider_context;
+    local_provider_context = &_ef_ext_program_info_provider_context;
 
     status = NmrRegisterProvider(
-        &_ef_ebpf_extension_program_info_provider_characteristics,
+        &_ef_ext_program_info_provider_characteristics,
         local_provider_context,
         &local_provider_context->nmr_provider_handle);
     if (!NT_SUCCESS(status)) {
@@ -457,18 +460,23 @@ ef_ebpf_extension_program_info_provider_register()
 
 Exit:
     if (!NT_SUCCESS(status)) {
-        ef_ebpf_extension_program_info_provider_unregister();
+        ef_ext_program_info_provider_unregister();
     }
 
     return status;
 }
 
 void
-ef_ebpf_extension_hook_provider_unregister()
+ef_ext_hook_provider_unregister()
 {
-    ef_ebpf_extension_hook_provider_t* provider_context = &_ef_ebpf_extension_hook_provider_context;
+    ef_ext_hook_provider_t* provider_context = &_ef_ext_hook_provider_context;
+
+    if (provider_context->nmr_provider_handle == NULL) {
+        return;
+    }
 
     NTSTATUS status = NmrDeregisterProvider(provider_context->nmr_provider_handle);
+
     if (status == STATUS_PENDING) {
         // Wait for clients to detach.
         NmrWaitForProviderDeregisterComplete(provider_context->nmr_provider_handle);
@@ -480,7 +488,7 @@ ef_ebpf_extension_hook_provider_unregister()
 //
 
 static NTSTATUS
-_ef_ebpf_extension_hook_provider_attach_client(
+_ef_ext_hook_provider_attach_client(
     _In_ HANDLE nmr_binding_handle,
     _In_ const void* provider_context,
     _In_ const NPI_REGISTRATION_INSTANCE* client_registration_instance,
@@ -490,8 +498,8 @@ _ef_ebpf_extension_hook_provider_attach_client(
     _Outptr_result_maybenull_ const void** provider_dispatch)
 {
     NTSTATUS status = STATUS_SUCCESS;
-    ef_ebpf_extension_hook_provider_t* local_provider_context = (ef_ebpf_extension_hook_provider_t*)provider_context;
-    ef_ebpf_extension_hook_client_t* hook_client = NULL;
+    ef_ext_hook_provider_t* local_provider_context = (ef_ext_hook_provider_t*)provider_context;
+    ef_ext_hook_client_t* hook_client = NULL;
     ebpf_extension_program_dispatch_table_t* client_dispatch_table;
 
     if ((provider_binding_context == NULL) || (provider_dispatch == NULL) || (local_provider_context == NULL)) {
@@ -508,14 +516,13 @@ _ef_ebpf_extension_hook_provider_attach_client(
     *provider_binding_context = NULL;
     *provider_dispatch = NULL;
 
-    hook_client =
-        cxplat_allocate(CXPLAT_POOL_FLAG_NON_PAGED, sizeof(ef_ebpf_extension_hook_client_t), EF_EXT_POOL_TAG_DEFAULT);
+    hook_client = cxplat_allocate(CXPLAT_POOL_FLAG_NON_PAGED, sizeof(ef_ext_hook_client_t), EF_EXT_POOL_TAG_DEFAULT);
     if (hook_client == NULL) {
         status = STATUS_NO_MEMORY;
         goto Exit;
     }
 
-    RtlZeroMemory(hook_client, sizeof(ef_ebpf_extension_hook_client_t));
+    RtlZeroMemory(hook_client, sizeof(ef_ext_hook_client_t));
 
     if (hook_client == NULL) {
         status = STATUS_NO_MEMORY;
@@ -551,19 +558,19 @@ Exit:
 }
 
 static NTSTATUS
-_ef_ebpf_extension_hook_provider_detach_client(_In_ const void* provider_binding_context)
+_ef_ext_hook_provider_detach_client(_In_ const void* provider_binding_context)
 {
     NTSTATUS status = STATUS_SUCCESS;
 
-    ef_ebpf_extension_hook_client_t* local_client_context = (ef_ebpf_extension_hook_client_t*)provider_binding_context;
-    ef_ebpf_extension_hook_provider_t* provider_context = NULL;
+    ef_ext_hook_client_t* local_client_context = (ef_ext_hook_client_t*)provider_binding_context;
+    ef_ext_hook_provider_t* provider_context = NULL;
 
     if (local_client_context == NULL) {
         status = STATUS_INVALID_PARAMETER;
         goto Exit;
     }
 
-    provider_context = &_ef_ebpf_extension_hook_provider_context;
+    provider_context = &_ef_ext_hook_provider_context;
     provider_context->attached_client = NULL;
 
 Exit:
@@ -571,51 +578,49 @@ Exit:
 }
 
 static void
-_ef_ebpf_extension_hook_provider_cleanup_binding_context(_Frees_ptr_ void* provider_binding_context)
+_ef_ext_hook_provider_cleanup_binding_context(_Frees_ptr_ void* provider_binding_context)
 {
     CXPLAT_FREE(provider_binding_context);
 }
 
-NPI_MODULEID DECLSPEC_SELECTANY _ef_ebpf_extension_hook_provider_moduleid = {
+NPI_MODULEID DECLSPEC_SELECTANY _ef_ext_hook_provider_moduleid = {
     sizeof(NPI_MODULEID), MIT_GUID, EBPF_PROGRAM_TYPE_FILE_OPS_GUID};
 
 // EF eBPF extension Hook NPI provider characteristics
-ebpf_attach_provider_data_t _ef_ebpf_extension_attach_provider_data = {
+ebpf_attach_provider_data_t _ef_ext_attach_provider_data = {
     EBPF_ATTACH_PROVIDER_DATA_HEADER, EBPF_PROGRAM_TYPE_FILE_OPS_GUID, BPF_ATTACH_TYPE_SAMPLE, BPF_LINK_TYPE_UNSPEC};
 
-const NPI_PROVIDER_CHARACTERISTICS _ef_ebpf_extension_hook_provider_characteristics = {
+const NPI_PROVIDER_CHARACTERISTICS _ef_ext_hook_provider_characteristics = {
     0,
     sizeof(NPI_PROVIDER_CHARACTERISTICS),
-    _ef_ebpf_extension_hook_provider_attach_client,
-    _ef_ebpf_extension_hook_provider_detach_client,
-    _ef_ebpf_extension_hook_provider_cleanup_binding_context,
+    _ef_ext_hook_provider_attach_client,
+    _ef_ext_hook_provider_detach_client,
+    _ef_ext_hook_provider_cleanup_binding_context,
     {0,
      sizeof(NPI_REGISTRATION_INSTANCE),
      &EBPF_HOOK_EXTENSION_IID,
-     &_ef_ebpf_extension_hook_provider_moduleid,
+     &_ef_ext_hook_provider_moduleid,
      0,
-     &_ef_ebpf_extension_attach_provider_data},
+     &_ef_ext_attach_provider_data},
 };
 
 NTSTATUS
-ef_ebpf_extension_hook_provider_register()
+ef_ext_hook_provider_register()
 {
-    ef_ebpf_extension_hook_provider_t* local_provider_context;
+    ef_ext_hook_provider_t* local_provider_context;
     NTSTATUS status = STATUS_SUCCESS;
 
-    local_provider_context = &_ef_ebpf_extension_hook_provider_context;
+    local_provider_context = &_ef_ext_hook_provider_context;
 
     status = NmrRegisterProvider(
-        &_ef_ebpf_extension_hook_provider_characteristics,
-        local_provider_context,
-        &local_provider_context->nmr_provider_handle);
+        &_ef_ext_hook_provider_characteristics, local_provider_context, &local_provider_context->nmr_provider_handle);
     if (!NT_SUCCESS(status)) {
         goto Exit;
     }
 
 Exit:
     if (!NT_SUCCESS(status)) {
-        ef_ebpf_extension_hook_provider_unregister();
+        ef_ext_hook_provider_unregister();
     }
 
     return status;
@@ -626,8 +631,8 @@ ef_ext_invoke_program(_Inout_ ef_program_context_t* context, _Out_ uint32_t* res
 {
     ebpf_result_t return_value = EBPF_SUCCESS;
 
-    ef_ebpf_extension_hook_provider_t* hook_provider_context = &_ef_ebpf_extension_hook_provider_context;
-    ef_ebpf_extension_hook_client_t* hook_client = hook_provider_context->attached_client;
+    ef_ext_hook_provider_t* hook_provider_context = &_ef_ext_hook_provider_context;
+    ef_ext_hook_client_t* hook_client = hook_provider_context->attached_client;
 
     if (hook_client == NULL) {
         return_value = EBPF_FAILED;

@@ -37,5 +37,17 @@ typedef struct _ef_program_context
     uint32_t helper_data_2;
 } ef_program_context_t;
 
+NTSTATUS
+ef_ext_program_info_provider_register();
+
+void
+ef_ext_program_info_provider_unregister();
+
+void
+ef_ext_hook_provider_unregister();
+
+NTSTATUS
+ef_ext_hook_provider_register();
+
 _Must_inspect_result_ ebpf_result_t
 ef_ext_invoke_program(_Inout_ ef_program_context_t* context, _Out_ uint32_t* result);

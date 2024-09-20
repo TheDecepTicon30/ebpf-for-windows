@@ -374,19 +374,51 @@ Return Value:
 
     FLT_ASSERT(NT_SUCCESS(status));
 
-    if (NT_SUCCESS(status)) {
+    if (!NT_SUCCESS(status)) {
+        goto Exit;
+    }
 
-        //
-        //  Start filtering i/o
-        //
+    //
+    //  Start filtering i/o
+    //
 
-        status = FltStartFiltering(gFilterHandle);
+    status = FltStartFiltering(gFilterHandle);
 
-        if (!NT_SUCCESS(status)) {
+    if (!NT_SUCCESS(status)) {
+        goto Exit;
+    }
 
+    //
+    //  Register with eBPF extension.
+    //
+
+    status = ef_ext_program_info_provider_register();
+
+    if (!NT_SUCCESS(status)) {
+        goto Exit;
+    }
+
+    status = ef_ext_hook_provider_register();
+
+    if (!NT_SUCCESS(status)) {
+        goto Exit;
+    }
+
+Exit:
+
+    if (!NT_SUCCESS(status)) {
+
+        EF_DBG_PRINT(EF_DBG_TRACE_ROUTINES, ("EbpfFsFlt!DriverEntry: Failed\n"));
+
+        ef_ext_hook_provider_unregister();
+        ef_ext_program_info_provider_unregister();
+
+        if (gFilterHandle != NULL) {
             FltUnregisterFilter(gFilterHandle);
         }
     }
+
+    EF_DBG_PRINT(EF_DBG_TRACE_ROUTINES, ("EbpfFsFlt!DriverEntry: Exited\n"));
 
     return status;
 }
@@ -418,7 +450,11 @@ Return Value:
 
     EF_DBG_PRINT(EF_DBG_TRACE_ROUTINES, ("EbpfFsFlt!EfUnload: Entered\n"));
 
+    ef_ext_hook_provider_unregister();
+    ef_ext_program_info_provider_unregister();
     FltUnregisterFilter(gFilterHandle);
+
+    EF_DBG_PRINT(EF_DBG_TRACE_ROUTINES, ("EbpfFsFlt!EfUnload: Exited\n"));
 
     return STATUS_SUCCESS;
 }
