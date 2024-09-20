@@ -5,6 +5,8 @@
  * @brief Implementation of file system mini-filter to provide eBPF hook points.
  */
 
+#include "ebpfprov.h"
+
 #include <fltKernel.h>
 #include <suppress.h>
 
@@ -592,6 +594,17 @@ Return Value:
     UNREFERENCED_PARAMETER(Flags);
 
     EF_DBG_PRINT(EF_DBG_TRACE_ROUTINES, ("EbpfFsFlt!EfPostCreateCallback: Entered\n"));
+
+    UINT32 ebpfResult = 0;
+    ef_program_context_t ebpfProgramContext = {0};
+
+    ebpf_result_t ebpfInvokeResult = ef_ext_invoke_program(&ebpfProgramContext, &ebpfResult);
+
+    EF_DBG_PRINT(
+        EF_DBG_TRACE_ROUTINES,
+        ("EbpfFsFlt!EfPostCreateCallback: ebpfInvokeResult = %d ebpfResult = %ul\n", ebpfInvokeResult, ebpfResult));
+
+    EF_DBG_PRINT(EF_DBG_TRACE_ROUTINES, ("EbpfFsFlt!EfPostCreateCallback: Exited\n"));
 
     return FLT_POSTOP_FINISHED_PROCESSING;
 }

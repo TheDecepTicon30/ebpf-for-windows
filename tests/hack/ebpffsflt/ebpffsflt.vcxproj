@@ -163,5 +163,8 @@
       <Project>{1ebe3966-7dc4-49b4-b840-3d33d63415ec}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ebpfprov.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

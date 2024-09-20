@@ -7,35 +7,7 @@
  * Registers as an eBPF extension program information provider and hook provider.
  */
 
-#include "cxplat.h"
-#include "ebpf_extension.h"
-#include "ebpf_extension_uuids.h"
-#include "ebpf_program_attach_type_guids.h" // TODO(issue #2305): remove this include.
-#include "ebpf_program_types.h"
-#include "ebpf_structs.h"
-
-#include <ntifs.h> // Must be included before ntddk.h
-#include <netioddk.h>
-#include <ntddk.h>
-#include <ntstatus.h>
-
-#define EF_EXT_HELPER_FUNCTION_START EBPF_MAX_GENERAL_HELPER_FUNCTION
-#define EBPF_COUNT_OF(arr) (sizeof(arr) / sizeof(arr[0]))
-#define EF_PID_TGID_VALUE 9999
-#define EF_EXT_POOL_TAG_DEFAULT 'lpof'
-
-#define CXPLAT_FREE(x) cxplat_free(x, CXPLAT_POOL_FLAG_NON_PAGED, EF_EXT_POOL_TAG_DEFAULT)
-
-// EF extension program context.
-typedef struct _ef_program_context
-{
-    uint8_t* data_start;
-    uint8_t* data_end;
-    uint32_t uint32_data;
-    uint16_t uint16_data;
-    uint32_t helper_data_1;
-    uint32_t helper_data_2;
-} ef_program_context_t;
+#include "ebpfprov.h"
 
 static const ebpf_context_descriptor_t _ef_ebpf_context_descriptor = {
     sizeof(ef_program_context_t),
@@ -108,13 +80,16 @@ static const ebpf_program_info_t _ef_ebpf_extension_program_info = {
     EBPF_COUNT_OF(_ef_ebpf_extension_global_helper_function_prototype),
     _ef_ebpf_extension_global_helper_function_prototype};
 
-// Helper Function Definitions.
+#pragma region Helper functions
+
+static volatile int64_t _ef_path_compare_result = 0;
 
 static int64_t
 _ef_ebpf_extension_helper_function1(_In_ const ef_program_context_t* context)
 {
     UNREFERENCED_PARAMETER(context);
-    return 0;
+
+    return _ef_path_compare_result;
 }
 
 static int64_t
@@ -201,12 +176,16 @@ static const void* _ef_ebpf_extension_helpers[] = {
     (void*)&_ef_ebpf_extension_helper_implicit_1,
     (void*)&_ef_ebpf_extension_helper_implicit_2};
 
-// Global Helper Function Definitions.
+#pragma endregion
+
+#pragma region Global Helper Function Definitions.
 static uint64_t
 _ef_get_pid_tgid()
 {
-    return EF_PID_TGID_VALUE;
+    return 1234;
 }
+
+#pragma endregion
 
 typedef struct _ef_ebpf_extension_program_info_client
 {
@@ -288,7 +267,8 @@ _ef_context_create(
         result = EBPF_NO_MEMORY;
         goto Exit;
     }
-    ef_context = (ef_program_context_t*)&context_header->context;
+
+    ef_context = &context_header->context;
 
     memcpy(ef_context, context_in, sizeof(ef_program_context_t));
 
@@ -639,4 +619,27 @@ Exit:
     }
 
     return status;
+}
+
+_Must_inspect_result_ ebpf_result_t
+ef_ext_invoke_program(_Inout_ ef_program_context_t* context, _Out_ uint32_t* result)
+{
+    ebpf_result_t return_value = EBPF_SUCCESS;
+
+    ef_ebpf_extension_hook_provider_t* hook_provider_context = &_ef_ebpf_extension_hook_provider_context;
+    ef_ebpf_extension_hook_client_t* hook_client = hook_provider_context->attached_client;
+
+    if (hook_client == NULL) {
+        return_value = EBPF_FAILED;
+        goto Exit;
+    }
+
+    ebpf_program_invoke_function_t invoke_program = hook_client->invoke_program;
+    const void* client_binding_context = hook_client->client_binding_context;
+
+    // Run the eBPF program using cached copies of invoke_program and client_binding_context.
+    return_value = invoke_program(client_binding_context, context, result);
+
+Exit:
+    return return_value;
 }
