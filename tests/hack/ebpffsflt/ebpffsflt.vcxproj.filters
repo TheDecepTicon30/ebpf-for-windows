@@ -30,6 +30,9 @@
     <ClInclude Include="ebpfprov.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="file_ops_helpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Inf Include="EbpfFsFlt.inf">

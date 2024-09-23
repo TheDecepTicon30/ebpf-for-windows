@@ -14,6 +14,7 @@
 #include "ebpf_program_attach_type_guids.h"
 #include "ebpf_program_types.h"
 #include "ebpf_structs.h"
+#include "file_ops_helpers.h"
 
 #include <ntifs.h> // Must be included before ntddk.h
 #include <netioddk.h>
@@ -25,17 +26,6 @@
 #define EF_EXT_POOL_TAG_DEFAULT 'lpof'
 
 #define CXPLAT_FREE(x) cxplat_free(x, CXPLAT_POOL_FLAG_NON_PAGED, EF_EXT_POOL_TAG_DEFAULT)
-
-// EF extension program context.
-typedef struct _ef_program_context
-{
-    uint8_t* data_start;
-    uint8_t* data_end;
-    uint32_t uint32_data;
-    uint16_t uint16_data;
-    uint32_t helper_data_1;
-    uint32_t helper_data_2;
-} ef_program_context_t;
 
 NTSTATUS
 ef_ext_program_info_provider_register();
