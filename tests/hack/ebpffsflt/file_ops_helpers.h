@@ -31,7 +31,6 @@ typedef struct _ef_program_context
     uint32_t helper_data_2;
 } ef_program_context_t;
 
-
 #ifndef __doxygen
 #define EBPF_HELPER(return_type, name, args) typedef return_type(*const name##_t) args
 #endif
@@ -69,10 +68,7 @@ EBPF_HELPER(int64_t, ef_ext_find, (void* buffer, uint32_t size, void* find, uint
  * @retval 0 The operation was successful.
  * @retval -1 An error occurred.
  */
-EBPF_HELPER(
-    int64_t,
-    ef_ext_replace,
-    (void* buffer, uint32_t size, int64_t position, void* replace, uint32_t arg_size));
+EBPF_HELPER(int64_t, ef_ext_replace, (void* buffer, uint32_t size, int64_t position, void* replace, uint32_t arg_size));
 #ifndef __doxygen
 #define ef_ext_replace ((ef_file_ops_ext_replace_t)FILE_OPS_EXT_HELPER_FN_BASE + 3)
 #endif
@@ -89,8 +85,7 @@ EBPF_HELPER(
  */
 EBPF_HELPER(int64_t, ef_ext_helper_implicit_1, ());
 #ifndef __doxygen
-#define ef_ext_helper_implicit_1 \
-    ((ef_ext_helper_implicit_1_t)FILE_OPS_EXT_HELPER_FN_BASE + 4)
+#define ef_ext_helper_implicit_1 ((ef_ext_helper_implicit_1_t)FILE_OPS_EXT_HELPER_FN_BASE + 4)
 #endif
 
 /**
@@ -105,6 +100,5 @@ EBPF_HELPER(int64_t, ef_ext_helper_implicit_1, ());
  */
 EBPF_HELPER(int64_t, ef_ext_helper_implicit_2, (uint32_t arg));
 #ifndef __doxygen
-#define ef_ext_helper_implicit_2 \
-    ((ef_ext_helper_implicit_2_t)FILE_OPS_EXT_HELPER_FN_BASE + 5)
+#define ef_ext_helper_implicit_2 ((ef_ext_helper_implicit_2_t)FILE_OPS_EXT_HELPER_FN_BASE + 5)
 #endif
