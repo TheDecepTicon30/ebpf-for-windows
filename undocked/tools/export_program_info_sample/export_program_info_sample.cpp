@@ -7,6 +7,7 @@
 #include "ebpf_extension.h"
 #include "ebpf_program_types.h"
 #include "ebpf_store_helper.h"
+#include "file_ops_program_info.h"
 #include "sample_ext_program_info.h"
 
 #include <codecvt>
@@ -22,7 +23,8 @@ typedef struct _ebpf_program_section_info_with_count
     size_t section_info_count;
 } ebpf_program_section_info_with_count_t;
 
-static const ebpf_program_info_t* _program_information_array[] = {&_sample_ebpf_extension_program_info};
+static const ebpf_program_info_t* _program_information_array[] = {
+    &_sample_ebpf_extension_program_info, &_ef_ext_program_info};
 
 ebpf_program_section_info_t _sample_ext_section_info[] = {
     {EBPF_PROGRAM_SECTION_INFORMATION_HEADER,
@@ -32,9 +34,17 @@ ebpf_program_section_info_t _sample_ext_section_info[] = {
      BPF_PROG_TYPE_SAMPLE,
      BPF_ATTACH_TYPE_SAMPLE}};
 
+ebpf_program_section_info_t _ef_ext_section_info[] = {
+    {EBPF_PROGRAM_SECTION_INFORMATION_HEADER,
+     L"file_ops",
+     &EBPF_PROGRAM_TYPE_FILE_OPS,
+     &EBPF_ATTACH_TYPE_POST_CREATE,
+     BPF_PROG_TYPE_FILE_OPS,
+     BPF_ATTACH_TYPE_POST_CREATE}};
+
 static std::vector<ebpf_program_section_info_with_count_t> _section_information = {
     {&_sample_ext_section_info[0], _countof(_sample_ext_section_info)},
-};
+    {&_ef_ext_section_info[0], _countof(_ef_ext_section_info)}};
 
 uint32_t
 export_program_information()

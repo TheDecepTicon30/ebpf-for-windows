@@ -21,8 +21,6 @@
 #include <ntddk.h>
 #include <ntstatus.h>
 
-#define EF_EXT_HELPER_FUNCTION_START EBPF_MAX_GENERAL_HELPER_FUNCTION
-#define EBPF_COUNT_OF(arr) (sizeof(arr) / sizeof(arr[0]))
 #define EF_EXT_POOL_TAG_DEFAULT 'lpof'
 
 #define CXPLAT_FREE(x) cxplat_free(x, CXPLAT_POOL_FLAG_NON_PAGED, EF_EXT_POOL_TAG_DEFAULT)
